@@ -37,13 +37,7 @@ const float rB = 1.0;
 const vec3 UNIT_Y = vec3(0,1,0);
 const float DIST_DESATURATION = 56.0 / 255.0; //WARNING this value is also hardcoded in the water color, don'tchange
 
-//#if defined(GL_FRAGMENT_PRECISION_HIGH)
-    //#define pfact highp
-//#else
-    #define pfact mediump
-//#endif
-
-varying pfact vec3 worldPosition;
+varying highp vec3 worldPosition;
 
 void main()
 {
@@ -70,8 +64,6 @@ worldPosition = POSITION.xyz;
     uv1 = TEXCOORD_1;
 	color = COLOR;
 #endif
-
-//color.rgb = mix(color.rgb, vec3(1.00, 1.00, 1.00), upFace);
 
 ///// find distance from the camera
 
