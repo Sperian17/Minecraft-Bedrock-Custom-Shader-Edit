@@ -1,0 +1,18 @@
+{
+    "format_version": 1,
+    "header": {
+        "description": "___",
+        "name": "Precision Test",
+        "uuid": "4160ce92-f8db-4cd9-b4cf-fab01b9878c4",
+        "version": [1, 0, 3],
+        "min_engine_version": [1, 8, 0]
+    },
+    "modules": [
+        {
+            "description": "Shader Replication Test1",
+            "type": "resources",
+            "uuid": "cc0851bd-996d-4ce6-a653-429299dbe15d",
+            "version": [1, 0, 3]
+        }
+    ]
+}
