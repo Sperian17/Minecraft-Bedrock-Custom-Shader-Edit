@@ -33,14 +33,7 @@ LAYOUT_BINDING(0) uniform sampler2D TEXTURE_0;
 LAYOUT_BINDING(1) uniform sampler2D TEXTURE_1;
 LAYOUT_BINDING(2) uniform sampler2D TEXTURE_2;
 
-//#if defined(GL_FRAGMENT_PRECISION_HIGH)
-    //#define pfact highp
-//#else
-    #define pfact highp
-//#endif
-
-
-varying pfact vec3 worldPosition;
+varying highp vec3 worldPosition;
 
 void main()
 {
@@ -69,21 +62,21 @@ void main()
 		discard;
 #endif
 
-pfact vec3 dfx = (dFdx(worldPosition));
-pfact vec3 dfy = (dFdy(worldPosition));
+highp vec3 dfx = (dFdx(worldPosition));
+highp vec3 dfy = (dFdy(worldPosition));
 
-pfact vec3 worldNormal = normalize(cross(dfx, dfy)); 
-pfact vec3 absoluteWorldNormal = abs(worldNormal);
+vec3 worldNormal = normalize(cross(dfx, dfy)); 
+vec3 absoluteWorldNormal = abs(worldNormal);
 
-pfact float upFace = max(worldNormal.y, 0.00);
+float upFace = max(worldNormal.y, 0.00);
 
 vec4 inColor = color;
 
 vec3 whiteColor = color.rgb;
 
-pfact vec3 baseLightDirection = vec3(0.625, 0.50, 0.8157);
+vec3 baseLightDirection = vec3(0.625, 0.50, 0.8157);
 
-pfact float ambientOcclusionDiffuseLighting = abs(dot(worldNormal, baseLightDirection)) + 0.50 * upFace;
+float ambientOcclusionDiffuseLighting = abs(dot(worldNormal, baseLightDirection)) + 0.50 * upFace;
 
 vec3 outColor = inColor.rgb / ambientOcclusionDiffuseLighting;
 
@@ -115,8 +108,6 @@ if(outColor.r > 1.00 || outColor.g > 1.00 || outColor.b > 1.00){
 	diffuse.rgb *= inColor.aaa;
 	diffuse.a = 1.0;
 #endif
-
-//diffuse.rgb = diffuse.rgb * mix(1.25, 1.00, dot(diffuse.rgb, vec3(0.2126, 0.7125, 0.0722))) ;
 
 diffuse.rgb = absoluteWorldNormal;
 
