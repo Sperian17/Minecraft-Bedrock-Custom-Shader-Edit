@@ -22,10 +22,6 @@
 
 varying vec4 color;
 
-#ifdef FOG
-varying vec4 fogColor;
-#endif
-
 #include "uniformShaderConstants.h"
 #include "util.h"
 
@@ -47,10 +43,6 @@ void main()
 #else
 	vec4 diffuse = texture2D(TEXTURE_0, uv0);
 #endif
-	
-#ifdef SEASONS_FAR
-	diffuse.a = 1.0;
-#endif
 
 #if USE_ALPHA_TEST
 	#ifdef ALPHA_TO_COVERAGE
@@ -59,8 +51,10 @@ void main()
 	#define ALPHA_THRESHOLD 0.5
 	#endif
 	if(diffuse.a < ALPHA_THRESHOLD)
-		discard;
+		discard; 
 #endif
+
+vec4 inColor = color;
 
 highp vec3 dfx = (dFdx(worldPosition));
 highp vec3 dfy = (dFdy(worldPosition));
@@ -68,17 +62,11 @@ highp vec3 dfy = (dFdy(worldPosition));
 vec3 worldNormal = normalize(cross(dfx, dfy)); 
 vec3 absoluteWorldNormal = abs(worldNormal);
 
-float upFace = max(worldNormal.y, 0.00);
+vec3 baseLightDirection = vec3(0.625, 0.450, 0.816);
 
-vec4 inColor = color;
+float ambientOcclusionDiffuseLighting = abs(dot(worldNormal, baseLightDirection)) + 0.50 * max(worldNormal.y, 0.00);
 
-vec3 whiteColor = color.rgb;
-
-vec3 baseLightDirection = vec3(0.625, 0.50, 0.8157);
-
-float ambientOcclusionDiffuseLighting = abs(dot(worldNormal, baseLightDirection)) + 0.50 * upFace;
-
-vec3 outColor = inColor.rgb / ambientOcclusionDiffuseLighting;
+vec3 outColor = color.rgb / ambientOcclusionDiffuseLighting;
 
 if(outColor.r > 1.00 || outColor.g > 1.00 || outColor.b > 1.00){
     if(abs(outColor.r - outColor.g) <= 0.002 && abs(outColor.g - outColor.b) <= 0.002 && abs(outColor.b - outColor.r) <= 0.002){
@@ -92,28 +80,20 @@ if(outColor.r > 1.00 || outColor.g > 1.00 || outColor.b > 1.00){
 	diffuse.a *= inColor.a;
 #endif
 
-#if !defined(ALWAYS_LIT)
-	diffuse *= texture2D( TEXTURE_1, uv1 );
+#if !USE_ALPHA_TEST && !defined(BLEND)
+	diffuse.a = inColor.a;
 #endif
-
-#ifndef SEASONS
-	#if !USE_ALPHA_TEST && !defined(BLEND)
-		diffuse.a = inColor.a;
-	#endif
 	
-	diffuse.rgb *= outColor;
-#else
-	vec2 uv = inColor.xy;
-	diffuse.rgb *= mix(vec3(1.0,1.0,1.0), texture2D( TEXTURE_2, uv).rgb*2.0, inColor.b);
-	diffuse.rgb *= inColor.aaa;
-	diffuse.a = 1.0;
-#endif
+diffuse.rgb *= outColor;
 
-diffuse.rgb = absoluteWorldNormal;
+diffuse.rgb = pow(diffuse.rgb, vec3(2.20, 2.20, 2.20));
 
-#ifdef FOG
-	diffuse.rgb = mix( diffuse.rgb, fogColor.rgb, fogColor.a );
-#endif
+diffuse.rgb = diffuse.rgb / (diffuse.rgb + 1.00);
+
+diffuse.rgb = pow(diffuse.rgb, 1.00 / vec3(2.20, 2.20, 2.20));
+
+diffuse.rgb = mix(diffuse.rgb * 1.25, diffuse.rgb, dot(diffuse.rgb, vec3(0.2126, 0.7152, 0.0722)));
+
 
 	gl_FragColor = diffuse;
 	
