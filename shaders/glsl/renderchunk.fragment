@@ -86,15 +86,6 @@ if(outColor.r > 1.00 || outColor.g > 1.00 || outColor.b > 1.00){
 	
 diffuse.rgb *= outColor;
 
-diffuse.rgb = pow(diffuse.rgb, vec3(2.20, 2.20, 2.20));
-
-diffuse.rgb = diffuse.rgb / (diffuse.rgb + 1.00);
-
-diffuse.rgb = pow(diffuse.rgb, 1.00 / vec3(2.20, 2.20, 2.20));
-
-diffuse.rgb = mix(diffuse.rgb * 1.25, diffuse.rgb, dot(diffuse.rgb, vec3(0.2126, 0.7152, 0.0722)));
-
-
 	gl_FragColor = diffuse;
 	
 #endif // BYPASS_PIXEL_SHADER
